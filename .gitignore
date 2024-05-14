@@ -10,3 +10,9 @@ manual/ippl_user_guide.pdf
 *~
 *.~
 build*
+CMakeModules/FindFINUFFT.cmake
+.vscode/settings.json
+.vscode/c_cpp_properties.json
+
+.vscode/c_cpp_properties.json
+.vscode/settings.json
