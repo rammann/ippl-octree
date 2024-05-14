@@ -81,8 +81,7 @@ namespace ippl
             eps_m = solverparams.get<double>("eps");
             
             // Radius of the box and sigma at the coarsest level
-            //r0_m = max-min;
-            r0_m = 1.0;
+            r0_m = max-min;
             sig0_m = r0_m/Kokkos::sqrt((Kokkos::log(1/eps_m)));
             
         }
@@ -225,6 +224,36 @@ namespace ippl
                     
                 // Container for outgoing expansion
                 Kokkos::UnorderedMap<morton_node_id_type, fourier_field_type> Phi;
+
+                // Create Fourier-space field for outgoing expansion
+                ippl::Vector<int, dim> pt = {nf, nf, nf};
+                ippl::Index I(pt[0]); 
+                ippl::Index J(pt[1]); 
+                ippl::Index K(pt[2]);
+                ippl::NDIndex<3> owned(I, J, K);
+
+                std::array<bool, dim> isParallel;  
+                isParallel.fill(true);
+
+                ippl::FieldLayout<dim> layout(MPI_COMM_WORLD, owned, isParallel);
+
+                vector_type hx = {1.0, 1.0, 1.0};
+                vector_type origin = {
+                    -static_cast<double>(nf/2), 
+                    -static_cast<double>(nf/2), 
+                    -static_cast<double>(nf/2)
+                };
+                mesh_type mesh(owned, hx, origin);
+
+                
+
+                // Initialise NUFFT 1
+                ippl::ParameterList fftParams;
+                fftParams.add("use_finufft_defaults", false); 
+                fftParams.add("tolerance", eps_m);
+                fftParams.add("nthreads", 0); // all available threads
+                fftParams.add("spread_sort", 2); // automatic heuristic choice
+                fftParams.add("spread_kerevalmeth", 1); // 1 is faster
                 
                
                 IpplTimings::startTimer(outgoingexpansiontimer);
@@ -253,39 +282,12 @@ namespace ippl
                         relSources.rho(i) = sources_m.rho(idSources[i]);
                     });
 
-                    // Create Fourier-space field for outgoing expansion
-                    ippl::Vector<int, dim> pt = {nf, nf, nf};
-                    ippl::Index I(pt[0]); 
-                    ippl::Index J(pt[1]); 
-                    ippl::Index K(pt[2]);
-                    ippl::NDIndex<3> owned(I, J, K);
-
-                    std::array<bool, dim> isParallel;  
-                    isParallel.fill(true);
-
-                    ippl::FieldLayout<dim> layout(MPI_COMM_WORLD, owned, isParallel);
-
-                    vector_type hx = {1.0, 1.0, 1.0};
-                    vector_type origin = {
-                        -static_cast<double>(nf/2), 
-                        -static_cast<double>(nf/2), 
-                        -static_cast<double>(nf/2)
-                    };
-                    mesh_type mesh(owned, hx, origin);
-
-                    fourier_field_type fieldPhi(mesh, layout, 0);
-                    fieldPhi = 0;
-
-                    // Initialise NUFFT 1
-                    ippl::ParameterList fftParams;
-                    fftParams.add("use_finufft_defaults", false); 
-                    fftParams.add("tolerance", eps_m);
-                    fftParams.add("nthreads", 0); // all available threads
-                    fftParams.add("spread_sort", 2); // automatic heuristic choice
-                    fftParams.add("spread_kerevalmeth", 1); // 1 is faster
                     int type1 = 1; 
                     std::unique_ptr<nufft_type> nufft1 = std::make_unique<nufft_type>(layout, relSources.getTotalNum(), type1, fftParams);
-    
+                    
+                    fourier_field_type fieldPhi(mesh, layout, 0);
+                    fieldPhi = 0;
+                    
                     // Perform NUFFT 1
                     IpplTimings::startTimer(nuffttimer);
                     nufft1->transform(relSources.R, relSources.rho, fieldPhi);
@@ -312,28 +314,6 @@ namespace ippl
                     }
                     // Vector of colleague keys
                     Kokkos::vector<morton_node_id_type> colleaguekeys = tree_m.GetColleagues(key);
-                    
-
-
-                    // Create Fourier-space field for incoming expansion
-                    ippl::Vector<int, dim> pt = {nf, nf, nf};
-                    ippl::Index I(pt[0]); 
-                    ippl::Index J(pt[1]); 
-                    ippl::Index K(pt[2]);
-                    ippl::NDIndex<3> owned(I, J, K);
-
-                    std::array<bool, dim> isParallel;  
-                    isParallel.fill(true);
-
-                    ippl::FieldLayout<dim> layout(MPI_COMM_WORLD, owned, isParallel);
-
-                    vector_type hx = {1, 1, 1};
-                    vector_type origin = {
-                        -static_cast<double>(nf/2), 
-                        -static_cast<double>(nf/2), 
-                        -static_cast<double>(nf/2)
-                    };
-                    mesh_type mesh(owned, hx, origin);
 
                     fourier_field_type fieldPsi(mesh, layout,0);
                     fieldPsi = 0;
@@ -425,31 +405,6 @@ namespace ippl
                     });
 
                     // Create Fourier-space field for outgoing expansion
-                    ippl::Vector<int, dim> pt = {nf, nf, nf};
-                    ippl::Index I(pt[0]); 
-                    ippl::Index J(pt[1]); 
-                    ippl::Index K(pt[2]);
-                    ippl::NDIndex<3> owned(I, J, K);
-
-                    std::array<bool, dim> isParallel;  
-                    isParallel.fill(true);
-
-                    ippl::FieldLayout<dim> layout(MPI_COMM_WORLD, owned, isParallel);
-
-                    vector_type hx = {1, 1, 1};
-                    vector_type origin = {
-                        -static_cast<double>(nf/2), 
-                        -static_cast<double>(nf/2), 
-                        -static_cast<double>(nf/2)
-                    };
-                    mesh_type mesh(owned, hx, origin);
-
-                    ippl::ParameterList fftParams;
-                    fftParams.add("use_finufft_defaults", false); 
-                    fftParams.add("tolerance", eps_m);
-                    fftParams.add("nthreads", 0); // all available threads
-                    fftParams.add("spread_sort", 2); // automatic heuristic choice
-                    fftParams.add("spread_kerevalmeth", 1); // 1 is faster
                     int type2 = 2; 
                     std::unique_ptr<nufft_type> nufft2 = std::make_unique<nufft_type>(layout, relTargets.getTotalNum(), type2, fftParams);
 
