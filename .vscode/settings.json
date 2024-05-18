@@ -1,5 +1,5 @@
 {
-    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "*.h": "cpp",
         "unordered_map": "cpp",
@@ -83,5 +83,6 @@
         "valarray": "cpp",
         "execution": "cpp",
         "regex": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

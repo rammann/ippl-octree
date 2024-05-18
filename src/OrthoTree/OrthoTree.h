@@ -67,7 +67,6 @@ public: // Member Functions
 
     void AddChildInOrder(morton_node_id_type kChild){
         
-        //std::cout << "Adding Child in Order with key " << kChild << "\n";
         morton_node_id_type idx = children_m.lower_bound(0,children_m.size(), kChild);
         if(idx != children_m.size() && children_m[idx] == kChild) return;
         if(idx == children_m.size()-1){
@@ -372,7 +371,7 @@ private: // Aid Function for Constructor
                 }
             }
 
-                NewNodes.push_back(kChild);
+            NewNodes.push_back(kChild);
             
         }
         
@@ -581,11 +580,6 @@ public: // Node Info Functions
     
     }
 
-    
-
-    
-
-    
 
 public: // Getters
 
@@ -653,7 +647,7 @@ public: // Getters
     Kokkos::vector<morton_node_id_type> GetCoarseNbrs(morton_node_id_type key) const{
 
         Kokkos::vector<morton_node_id_type> coarseNbrs{};
-        coarseNbrs.reserve(3);
+        coarseNbrs.reserve(7);
         if(key == 1) return coarseNbrs;
         
         OrthoTreeNode& node = this->GetNode(key);
@@ -750,7 +744,11 @@ public: // Getters
         Kokkos::vector<morton_node_id_type> leafNodes;
         leafNodes.reserve(static_cast<morton_node_id_type>(nodes_m.size()/2));
 
-        VisitNodes(kRoot, [&leafNodes](morton_node_id_type key, OrthoTreeNode const& node){if(!node.IsAnyChildExist()){leafNodes.push_back(key);} });
+        VisitNodes(kRoot, [&leafNodes](morton_node_id_type key, OrthoTreeNode const& node){
+            if(!node.IsAnyChildExist()){
+                leafNodes.push_back(key);
+            } 
+        });
 
         return leafNodes;
     }
@@ -805,7 +803,6 @@ public: // Getters
             
             if(GetDepth(key) == depth && GetNode(key).IsAnyChildExist()){
 
-                //std::cout << key << " ";
                 keys.push_back(key);
 
             }
@@ -824,7 +821,6 @@ public: // Getters
             
             if(GetDepth(key) == depth){
 
-                //std::cout << key << " ";
                 keys.push_back(key);
 
             }
@@ -843,11 +839,6 @@ public: // Getters
 
 
 }; // Class OrthoTree
-
-
-
-
-
 
 } // Namespace ippl
 #endif

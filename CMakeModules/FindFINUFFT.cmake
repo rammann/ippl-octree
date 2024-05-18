@@ -10,7 +10,7 @@ FIND_PATH(FINUFFT_INCLUDE_DIR finufft.h
     PATHS ENV CPP_INCLUDE_PATH
 )
 #Static library has some issues and gives a cuda error at the end of compilation
-FIND_LIBRARY(FINUFFT_LIBRARY_DIR libfinufft.dylib
+FIND_LIBRARY(FINUFFT_LIBRARY_DIR libfinufft.so
     HINTS $ENV{FINUFFT_LIBRARY_PATH} $ENV{FINUFFT_LIBRARY_DIR} $ENV{FINUFFT_PREFIX}/lib $ENV{FINUFFT_DIR}/lib $ENV{FINUFFT}/lib ${PROJECT_SOURCE_DIR}/lib
     PATHS ENV LIBRARY_PATH
 )

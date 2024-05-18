@@ -16,3 +16,4 @@ CMakeModules/FindFINUFFT.cmake
 
 .vscode/c_cpp_properties.json
 .vscode/settings.json
+CMakeModules/FindFINUFFT.cmake

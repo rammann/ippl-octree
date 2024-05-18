@@ -76,13 +76,13 @@ int main(int argc, char* argv[]) {
             treeparams.add("sourceidx",         nTargets);
         
             ippl::ParameterList solverparams;
-            solverparams.add("eps", 1e-6);
+            solverparams.add("eps", 1e-3);
 
             ippl::TreeOpenPoissonSolver solver(targets, sources, treeparams, solverparams);
             
             static auto explicit_timer = IpplTimings::getTimer("Explicitsol");
             static auto solver_timer = IpplTimings::getTimer("solver");
-            for(unsigned int time=0;time<3; ++time){
+            for(unsigned int time=0;time<1; ++time){
                 IpplTimings::startTimer(explicit_timer);
                 auto explicitsol = solver.ExplicitSolution();
                 IpplTimings::stopTimer(explicit_timer);

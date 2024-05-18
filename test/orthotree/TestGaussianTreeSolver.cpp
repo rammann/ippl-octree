@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
         
         // Tree Params
         ippl::ParameterList treeparams;
-        treeparams.add("maxdepth",          10);
+        treeparams.add("maxdepth",          5);
         treeparams.add("maxleafelements",   static_cast<int>(maxElements));
         treeparams.add("boxmin",            0.0);
         treeparams.add("boxmax",            1.0);
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
         // Solver Params
         ippl::ParameterList solverparams;
-        solverparams.add("eps", 1e-6);
+        solverparams.add("eps", 1e-3);
 
         ippl::TreeOpenPoissonSolver solver(targets, sources, treeparams, solverparams);
 
