@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
         std::vector<double> errors;
         std::vector<unsigned int> numbertargets;
 
-        for(unsigned int mult = 1; mult < 10; ++mult){
+        for(unsigned int mult = 1; mult <= 10; ++mult){
             std::cout << "It = " << mult << "\n";
-            unsigned int nTargets = mult * nTargetsstart;
+            unsigned int nTargets = 10 * mult * nTargetsstart;
             
             // Generate Points   
             playout_type PLayout;
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
             }
 
             ippl::ParameterList treeparams;
-            treeparams.add("maxdepth",          5);
+            treeparams.add("maxdepth",          6);
             treeparams.add("maxleafelements",   static_cast<int>(maxElements));
             treeparams.add("boxmin",            0.0);
             treeparams.add("boxmax",            1.0);
@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
                 IpplTimings::startTimer(explicit_timer);
                 auto explicitsol = solver.ExplicitSolution();
                 IpplTimings::stopTimer(explicit_timer);
+
                 IpplTimings::startTimer(solver_timer);
                 solver.Solve();
                 IpplTimings::stopTimer(solver_timer);

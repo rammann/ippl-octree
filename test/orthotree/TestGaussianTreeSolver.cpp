@@ -30,8 +30,9 @@ int main(int argc, char* argv[]) {
         ippl::OrthoTreeParticle sources(PLayout);
         unsigned int nSources = nTargets;
         sources.create(nSources);
-        std::mt19937_64 eng(23423);
-        std::uniform_real_distribution<double> posDis(0.0, 1);
+        /* std::mt19937_64 eng(23423); */
+        std::mt19937_64 eng(42);
+        std::uniform_real_distribution<double> posDis(0.0, 1.0);
         std::uniform_real_distribution<double> chargeDis(-20,20);
         for(unsigned int idx=0; idx<nTargets; ++idx){
             ippl::Vector<double,3> r = {posDis(eng), posDis(eng), posDis(eng)};
@@ -46,8 +47,9 @@ int main(int argc, char* argv[]) {
         }
         
         // Tree Params
+
         ippl::ParameterList treeparams;
-        treeparams.add("maxdepth",          5);
+        treeparams.add("maxdepth",          6);
         treeparams.add("maxleafelements",   static_cast<int>(maxElements));
         treeparams.add("boxmin",            0.0);
         treeparams.add("boxmax",            1.0);
@@ -68,7 +70,7 @@ int main(int argc, char* argv[]) {
         solver.Solve();
         IpplTimings::stopTimer(solver_timer);
         
-        IpplTimings::startTimer(explicit_timer);
+        /* IpplTimings::startTimer(explicit_timer);
         auto explicitsol = solver.ExplicitSolution();
         IpplTimings::stopTimer(explicit_timer);
 
@@ -86,7 +88,7 @@ int main(int argc, char* argv[]) {
         KOKKOS_LAMBDA(unsigned int i){
             targets.rho(i) = 0.0;
         });
-
+ */
         IpplTimings::print(std::to_string(nTargets)+"targets_"+std::to_string(maxElements)+"maxelements_"+std::string("timings.dat"));
 
          
